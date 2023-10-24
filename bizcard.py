@@ -306,4 +306,4 @@ if selected == "Modify":
         mycursor.execute("select company_name,card_holder,designation,mobile_number,email,website,area,city,state,pin_code from card_data")
         updated_df = pd.DataFrame(mycursor.fetchall(),columns=["Company_Name","Card_Holder","Designation","Mobile_Number","Email","Website","Area","City","State","Pin_Code"])
         st.write(updated_df)
------------------------------------------------------------------------------END-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------#END-----------------------------------------------------------------------------------
