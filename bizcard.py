@@ -1,3 +1,4 @@
+# NEEDED LIBRARIES
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
@@ -61,9 +62,9 @@ selected = option_menu(None, ["Home","Upload & Extract","Modify"],
 reader = easyocr.Reader(['en'])
 
 # CONNECTING WITH MYSQL DATABASE
-mydb = sql.connect(host="127.0.0.1",
-                   user="root",
-                   password="12345",
+mydb = sql.connect(host="HOST_NAME",
+                   user="USER_NAME",
+                   password="PASSWORD",
                    database= "bizcardx"
                   )
 mycursor = mydb.cursor(buffered=True)
@@ -101,7 +102,7 @@ if selected == "Upload & Extract":
     if Data is not None:
         
         def save_card(Data):
-            directory = "Data" 
+            directory = "Data" #directory of the file saved
             with open(os.path.join("Data",Data.name), "wb") as f:
                 f.write(Data.getbuffer())   
             save_card(data)
@@ -121,14 +122,14 @@ if selected == "Upload & Extract":
             plt.axis('off')
             plt.imshow(image)
         
-        # DISPLAYING THE UPLOADED CARD
+        # DISPLAY THE UPLOADED CARD
         col1,col2 = st.columns(2,gap="large")
         with col1:
             st.markdown("#     ")
             st.markdown("#     ")
             st.markdown("### You have uploaded the card")
             st.image(Data)
-        # DISPLAYING THE CARD WITH HIGHLIGHTS
+        # DISPLAY THE CARD WITH HIGHLIGHTS
         with col2:
             st.markdown("#     ")
             st.markdown("#     ")
@@ -145,7 +146,7 @@ if selected == "Upload & Extract":
         saved_img = os.getcwd()+ "\\" + "Data"+ "\\"+ Data.name
         result = reader.readtext(saved_img,detail = 0,paragraph=False)
         
-        # CONVERTING IMAGE TO BINARY TO UPLOAD TO SQL DATABASE
+        # CONVERT THE IMAGE TO BINARY TO UPLOAD TO SQL DATABASE
         def img_to_binary(file):
             # Convert image data to binary format
             with open(file, 'rb') as file:
@@ -168,17 +169,17 @@ if selected == "Upload & Extract":
         def get_data(res):
             for ind,i in enumerate(res):
 
-                # To get WEBSITE_URL
+                # To get WEBSITE_URL IN CARD
                 if "www " in i.lower() or "www." in i.lower():
                     data["website"].append(i)
                 elif "WWW" in i:
                     data["website"] = res[4] +"." + res[5]
 
-                # To get EMAIL ID
+                # To get EMAIL ID IN CARD
                 elif "@" in i:
                     data["email"].append(i)
 
-                # To get MOBILE NUMBER
+                # To get MOBILE NUMBER IN CARD
                 elif "-" in i:
                     data["mobile_number"].append(i)
                     if len(data["mobile_number"]) ==2:
@@ -188,21 +189,21 @@ if selected == "Upload & Extract":
                 elif ind == len(res)-1:
                     data["company_name"].append(i)
 
-                # To get CARD HOLDER NAME
+                # To get CARD HOLDER NAME IN CARD
                 elif ind == 0:
                     data["card_holder"].append(i)
 
-                # To get DESIGNATION
+                # To get DESIGNATION IN CARD
                 elif ind == 1:
                     data["designation"].append(i)
 
-                # To get AREA
+                # To get AREA IN CARD
                 if re.findall('^[0-9].+, [a-zA-Z]+',i):
                     data["area"].append(i.split(',')[0])
                 elif re.findall('[0-9] [a-zA-Z]+',i):
                     data["area"].append(i)
 
-                # To get CITY NAME
+                # To get CITY NAME IN CARD
                 match1 = re.findall('.+St , ([a-zA-Z]+).+', i)
                 match2 = re.findall('.+St,, ([a-zA-Z]+).+', i)
                 match3 = re.findall('^[E].*',i)
@@ -213,7 +214,7 @@ if selected == "Upload & Extract":
                 elif match3:
                     data["city"].append(match3[0])
 
-                # To get STATE
+                # To get STATE IN CARD
                 state_match = re.findall('[a-zA-Z]{9} +[0-9]',i)
                 if state_match:
                      data["state"].append(i[:9])
@@ -222,7 +223,7 @@ if selected == "Upload & Extract":
                 if len(data["state"])== 2:
                     data["state"].pop(0)
 
-                # To get PINCODE        
+                # To get PINCODE IN CARD        
                 if len(i)>=6 and i.isdigit():
                     data["pin_code"].append(i)
                 elif re.findall('[a-zA-Z]{9} +[0-9]',i):
@@ -247,7 +248,7 @@ if selected == "Upload & Extract":
                 mydb.commit()
             st.success("#### Uploaded to database successfully!")
         
-# MODIFY MENU    
+# MODIFY MENU 
 if selected == "Modify":
     col1,col2,col3 = st.columns([3,3,2])
     col2.markdown("## Alter or Delete the data here")
@@ -265,7 +266,7 @@ if selected == "Modify":
                             (selected_card,))
             result = mycursor.fetchone()
 
-            # DISPLAYING ALL THE INFORMATIONS
+            # DISPLAY ALL THE INFORMATIONS
             company_name = st.text_input("Company_Name", result[0])
             card_holder = st.text_input("Card_Holder", result[1])
             designation = st.text_input("Designation", result[2])
@@ -305,3 +306,4 @@ if selected == "Modify":
         mycursor.execute("select company_name,card_holder,designation,mobile_number,email,website,area,city,state,pin_code from card_data")
         updated_df = pd.DataFrame(mycursor.fetchall(),columns=["Company_Name","Card_Holder","Designation","Mobile_Number","Email","Website","Area","City","State","Pin_Code"])
         st.write(updated_df)
+-----------------------------------------------------------------------------END-----------------------------------------------------------------------------------
