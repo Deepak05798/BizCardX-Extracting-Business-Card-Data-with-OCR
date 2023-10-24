@@ -1,6 +1,6 @@
 # BizCardX-Extracting-Business-Card-Data-with-OCR
 
-# Demo video Link - https://www.linkedin.com/posts/deepak-harikrishnan-474a82264_hi-everyone-im-happy-to-share-my-third-activity-7122564020808646656-CJLJ?utm_source=share&utm_medium=member_desktop
+ Demo video Link - https://www.linkedin.com/posts/deepak-harikrishnan-474a82264_hi-everyone-im-happy-to-share-my-third-activity-7122564020808646656-CJLJ?utm_source=share&utm_medium=member_desktop
 
 # work flow of the project
 1. Install the required packages: You will need to install Python, Streamlit,
